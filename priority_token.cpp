@@ -29,7 +29,7 @@ vector<Packet> medium_2;
 vector<Packet> low;
 
 map<string,vector<Packet>> mp={{string("H"),high},{string("M1"),medium_1},{string("M2"),medium_2},{string("L"),low}};  //mapping of the vector as per the curr_queue
-map<string,string> mp_next_curr_queue={{string("H"),string("M1")},{string("M1"),string("M2")},{string("M2"),string("L")},{string("L"),string("H")}};
+map<string,pair<string,string>> mp_next_curr_queue={{string("H"),{string("M1"),string("L")}},{string("M1"),{string("M2"),string("H")}},{string("M2"),{string("L"),string("M1")}},{string("L"),{string("H"),string("M2")}}};
 map<string,int> quantum_time={{string("H"),high_time_quantum},{string("M1"),med1_time_quantum},{string("M2"),med2_time_quantum},{string("L"),low_time_quantum}};
 void Multilevel_queue_push(Packet pack){
     if(pack.priority>=high_priority_range.first && pack.priority<=high_priority_range.second){
@@ -49,9 +49,21 @@ void Multilevel_queue_push(Packet pack){
 void Multilevel_feedback_queue(){
     while(!high.empty() || !medium_1.empty() || !medium_2.empty() || !low.empty()){
         int quantum=quantum_time[curr_queue];
-        while(quantum && !mp[curr_queue].empty()){
-            
+        while(quantum && !mp[curr_queue].empty()){                  //got the shared cable access
+            Packet p=mp[curr_queue].back();
+            mp[curr_queue].pop_back();
+            quantum--;
+            curr_time++;
         }
+        if(curr_queue!="H"){                                          //this is forwarding
+            string before_queue=mp_next_curr_queue[curr_queue].second;
+
+                
+            
+            mp[curr_queue].back();
+        }
+        curr_queue=mp_next_curr_queue[curr_queue].first;
+
     }
 }
 int main(){
