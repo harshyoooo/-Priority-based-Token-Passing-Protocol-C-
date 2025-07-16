@@ -68,7 +68,7 @@ Built entirely in **C++**, this system mimics how devices transmit data over a s
 - Retransmission logic is invoked and pushed back into the queue with an updated sequence number.
 
 ---
-<img width="700" height="400" alt="Queue Snapshot" src="https://github.com/user-attachments/assets/a2430767-79ee-402d-b9ff-ae4310ead0f9" /> <img width="400" height="286" alt="Retransmission View" src="https://github.com/user-attachments/assets/40277e28-2577-43ce-bdb5-357ecee46e94" /> ```
+<img width="1000" height="600" alt="Queue Snapshot" src="https://github.com/user-attachments/assets/a2430767-79ee-402d-b9ff-ae4310ead0f9" /> <img width="1000" height="500" alt="Retransmission View" src="https://github.com/user-attachments/assets/40277e28-2577-43ce-bdb5-357ecee46e94" /> ```
 
 ## 🧪 Sample Output (Console)
 ```bash
