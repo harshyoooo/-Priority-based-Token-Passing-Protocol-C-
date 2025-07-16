@@ -57,8 +57,9 @@ struct frames{
         data=s;
         seq_num=num;
     }
+    
 };
-int MAX_DEVICES=2;
+int MAX_DEVICES=5;
 class device{
     public:
     int id;
@@ -118,7 +119,7 @@ void Multilevel_queue_push(Packet &pack){
     }
     return ;
 }
-int receiver(vector<frames> &f,device &b,device &s,int last,deque<int> &d,int &got,int &g){
+int receiver(vector<frames> &f,device &b,device &s,int last,int &got,int &g){
     int first=f[0].seq_num;
     if(!b.ACK[s.id].empty()){
         first=b.ACK[s.id].front();
@@ -129,9 +130,10 @@ int receiver(vector<frames> &f,device &b,device &s,int last,deque<int> &d,int &g
             already_dropped_once.insert({s.id, b.id});
             continue;
         }
-        cout<<"received frame "<<i.seq_num<<"from "<<s.id<<" to "<<b.id<<endl;
+        cout<<"received frame "<<i.seq_num<<" from "<<s.id<<" to "<<b.id<<" data: "<<i.data<<endl;
         if(!b.ACK[s.id].empty()){
             if((i.seq_num)==b.ACK[s.id].front()){
+                cout<<"received the dropped frame "<<i.seq_num<<"-----------"<<endl;
                 b.ACK_set[s.id].erase(b.ACK[s.id].front());
                 b.ACK[s.id].pop_front();
             }
@@ -140,7 +142,6 @@ int receiver(vector<frames> &f,device &b,device &s,int last,deque<int> &d,int &g
         b.v[s.id].push_back(i.data);
         got++;
     }
-    d=b.ACK[s.id];
     int i=first;
     int flag=0;
    int a = f.back().seq_num - first + 1;  // Only check the range that was just received
@@ -171,7 +172,7 @@ void sender(Packet &pack, device &b, device &s, int expected, int gen, int last)
     vector<frames> f;
     int gen_seq = gen_seq1;
     cout<<last-gen+1<<endl;
-    for (int i = 0; i < min(30, 999); i++) {
+    for (int i = 0; i < min(30, last-gen+1); i++) {
         if (b.check[s.id][gen_seq] == 0) {
             string s1 = s.data_to_be_sent[b.id][gen_seq];
             frames f1(gen_seq, s1);
@@ -187,7 +188,7 @@ void sender(Packet &pack, device &b, device &s, int expected, int gen, int last)
 
     int got = 0;
     int first;
-    int a=receiver(f, b, s, last, d, got, first);
+    int a=receiver(f, b, s, last, got, first);
     if (a == 0) {
         pack.arrival_time = curr_time.load();
         pack.sequence_no = b.ACK[s.id].front() ;  // retry from missing
